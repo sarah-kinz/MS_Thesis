@@ -25,3 +25,9 @@ As I bring in other characteristics at each spring, I may have to pull manually 
 ## February 22nd, 2022
 
 I am going to talk with Kate today about my data organization and methodology.
+
+It was a good chat. I basically am going to create two different data sets for the project now. One that is for the cost minimization model and one for the regression analysis
+
+## February 25th, 2022
+
+So I talked to Amanda about factors that impact nitrate concentration. She had a couple of recommendations. 1) rainfall 2) conifer vs hardwood because their foliage has different levels of nitrate in it 3) normalize by the size of the watershed and aquifer somehow 4) work backwards to understand how to do a regression. Pick a group of sites that have similar nitrate concentrations and see if any of the sites of other factors in common. She also recommended using a box and wisker graph to understand how different factors may be influencing nitrate concentration.

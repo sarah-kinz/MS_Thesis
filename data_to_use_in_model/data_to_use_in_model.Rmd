@@ -1,0 +1,53 @@
+---
+title: "data_to_use_in_model"
+author: "sarah_kinz"
+date: "3/3/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Reading in packages
+```{r}
+# install.packages("writexl")
+
+library(tidyverse)
+library("writexl")
+```
+
+### Sorting in in range categories
+```{r}
+mydata<-read.csv("clean_all_data.csv")
+
+mydata_categories<- mydata %>%
+  mutate(category = case_when(is.na(nitrate) &
+                                is.na(GPM) ~ "no data",
+                              is.na(GPM) &
+                                nitrate >= 3.0 ~ "single type",
+                              is.na(GPM) &
+                                nitrate >= 0.0 &
+                                nitrate < 3.0 ~ "single type",
+                              is.na(nitrate) &
+                                GPM >= 90 ~ "single type",
+                              is.na(nitrate) &
+                                GPM < 90 ~ "single type",
+                              GPM >= 90 &
+                                nitrate >= 3.0 ~ "in range",
+                              GPM < 90 & 
+                                nitrate < 3.0 ~ "out of range",
+                              GPM >= 90 &
+                                nitrate < 3.0 ~ "out of range",
+                              nitrate > 3.0 &
+                                GPM < 90 ~ "out of range"))
+
+
+model_data<-mydata_categories%>%filter(category == "in range")
+
+
+write_xlsx(model_data,"C:\\Users\\Sarah.Kinz\\Documents\\Graduate School\\Thesis Data Analysis\\MS_thesis_R_work\\MS_Thesis\\data_to_use_in_model\\model_data.xlsx")
+
+
+```
+
