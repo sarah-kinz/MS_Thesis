@@ -1,0 +1,106 @@
+---
+title: "how_many_bioreactors_in_ag"
+author: "sarah_kinz"
+date: "5/10/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+### Loading packages ###
+# install.packages("devtools")
+# devtools::install_github("ropensci/FedData")
+library(FedData)
+library(rasterVis)
+library(raster)
+library(sp)
+library(rgdal)
+library(reshape2)
+library(treemapify)
+library(ggplot2)
+library(kableExtra)
+library(scales)
+library(tidyverse)
+library(sf)
+library(dplyr)
+library(spData)
+library(tmap)
+library(rgdal)
+library(geojsonio)
+library(leaflet)
+library(data.table)
+library(rgdal)
+library(sp)
+library(RColorBrewer)
+library(rgeos) #for simplification
+library(sf)
+library(jsonlite)
+library(RJSONIO)
+# remotes::install_github("r-spatial/mapview")
+library(mapview)
+
+
+
+```
+
+
+```{r}
+
+### Creating Template ###
+
+watersheds <- st_read("data_clean_up/Chesapeake_Bay_Watershed_Boundary/Chesapeake_Bay_Watershed_Boundary.shp")
+
+watersheds<-st_transform(watersheds, crs = 4326)
+
+### Reading in NLCD ### 
+
+nlcd<-get_nlcd(watersheds, label='CBW')
+
+class(nlcd)
+
+### Reading in bioreactor data ###
+
+bio_data<-read_csv("data_clean_up/all_data.csv")
+
+class(bio_data)
+
+spring_location<- bio_data%>%select(lon, lat)
+
+# coordinates(spring_location) <- ~lon+lat
+
+spring_location<- st_as_sf(bio_data, coords = c("lat","lon"), crs = 4326 )
+
+spring_location<-as(spring_location, Class= "Spatial")
+
+class(spring_location)
+
+
+### New attempt ### 
+
+nlcd_long <- raster("data_clean_up/nlcd/NLCD_2019_Land_Cover.tiff")
+
+spring_location<-spTransform(spring_location, crs(nlcd_long))
+
+plot(nlcd_long)
+
+crs(nlcd_long)
+
+nlcd_long <- writeRaster(nlcd_long, "data_clean_up/nlcd/NLCD_2019_Land_Cover_crs.tiff", overwrite= TRUE )
+
+
+### Extracting Raster Values ### 
+
+landuse<- raster::extract(nlcd_long, spring_location, df=TRUE)
+
+
+unique(landuse$NLCD_2019_Land_Cover)
+
+landuse_table<- landuse %>% count(NLCD_2019_Land_Cover, sort = TRUE)
+
+
+
+
+
+```
+
