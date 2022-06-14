@@ -76,31 +76,38 @@ spring_location<-as(spring_location, Class= "Spatial")
 class(spring_location)
 
 
-### New attempt ### 
-
-nlcd_long <- raster("data_clean_up/nlcd/NLCD_2019_Land_Cover.tiff")
-
-spring_location<-spTransform(spring_location, crs(nlcd_long))
-
-plot(nlcd_long)
-
-crs(nlcd_long)
-
-nlcd_long <- writeRaster(nlcd_long, "data_clean_up/nlcd/NLCD_2019_Land_Cover_crs.tiff", overwrite= TRUE )
-
-
 ### Extracting Raster Values ### 
 
-landuse<- raster::extract(nlcd_long, spring_location, df=TRUE)
+landuse<- raster::extract(nlcd, spring_location, df=TRUE)
 
+
+### Connecting it with names ### 
 
 unique(landuse$NLCD_2019_Land_Cover)
 
-landuse_table<- landuse %>% count(NLCD_2019_Land_Cover, sort = TRUE)
+legend<-pal_nlcd()
+
+landuse_combo<- full_join(landuse, legend, by = c("CBW_NLCD_Land_Cover_2019" = "ID"))
+
+### Summarizing ###
+
+landuse_table<-landuse_combo %>% group_by(Class)%>%summarize(group=n())
+
+
+### 26 % of the 2950 known springs are in ag ###
+
+### calculating percentage table ### 
+
+landuse_percentage<- landuse_table %>% filter(group >= 2) %>% mutate(
+  percentage = group/2950*100
+)
 
 
 
+```
 
+### Determing landuse for my broad data
+```{r}
 
 ```
 
